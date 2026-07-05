@@ -1,94 +1,194 @@
-# Saucedemo Pytest + Selenium Test Automation
+# Framework de Automatización de Pruebas — Saucedemo
 
-Este es un proyecto de automatización de pruebas para el sitio web [saucedemo.com](https://www.saucedemo.com/), desarrollado con **Python**, **Pytest** y **Selenium WebDriver**. Utiliza el patrón de diseño **Page Object Model (POM)** para separar la lógica de negocio y los selectores web de los tests.
+Proyecto final del curso **Automation Testing** (Talento Tech). Framework completo de testing automatizado en Python que cubre pruebas de UI con Selenium WebDriver y pruebas de API con Requests, aplicando el patrón Page Object Model y generando reportes HTML con logging detallado.
 
-## 🚀 Tecnologías
+---
 
-- **Python 3**
-- **Pytest**: Framework de testing.
-- **Selenium WebDriver**: Automatización del navegador.
-- **Webdriver Manager**: Manejo automático de los binarios del navegador (ChromeDriver).
-- **pytest-html**: Generación de reportes HTML.
+## Propósito del Proyecto
 
-## 📁 Estructura del Proyecto
+Demostrar dominio de las técnicas de automatización aprendidas en el curso mediante:
 
-```text
-saucedemo-tests/
+- **Pruebas de UI** sobre [saucedemo.com](https://www.saucedemo.com): login, inventario, carrito, checkout y navegación
+- **Pruebas de API** sobre [reqres.in](https://reqres.in): operaciones GET, POST y DELETE con validación de respuestas
+- **Datos parametrizados** desde archivos CSV externos
+- **Reportes HTML** con estado de cada test, duración y screenshots de fallos
+- **Logging** de pasos clave para facilitar la depuración
+
+---
+
+## Tecnologías Utilizadas
+
+| Tecnología | Versión | Uso |
+|---|---|---|
+| Python | 3.8+ | Lenguaje principal |
+| Pytest | 8.2.0 | Framework de testing |
+| Selenium WebDriver | 4.20.0 | Automatización de UI |
+| Webdriver Manager | 4.0.1 | Gestión automática de ChromeDriver |
+| Requests | ≥2.31.0 | Pruebas de API REST |
+| pytest-html | 4.1.1 | Generación de reportes HTML |
+| Git / GitHub | — | Control de versiones y hosting |
+
+---
+
+## Estructura del Proyecto
+
+```
+qa_automation_final/
 │
 ├── tests/
-│   ├── pages/                   # Page Object Models
-│   │   ├── base_page.py         # Lógica común de WebDriver y esperas explícitas
-│   │   ├── inventory_page.py    # Página de inventario/productos
-│   │   └── login_page.py        # Página de inicio de sesión
+│   ├── pages/                      # Page Object Model (POM)
+│   │   ├── base_page.py            # Métodos comunes de WebDriver y esperas explícitas
+│   │   ├── login_page.py           # Página de login de Saucedemo
+│   │   ├── inventory_page.py       # Página de inventario/productos
+│   │   ├── cart_page.py            # Página del carrito
+│   │   └── checkout_page.py        # Páginas de checkout (paso 1, 2 y confirmación)
 │   │
-│   ├── ui/                      # Tests funcionales
-│   │   ├── test_inventory.py    # Pruebas de añadir/remover del carrito
-│   │   ├── test_login.py        # Pruebas de autenticación
-│   │   └── test_sample.py       # Ejemplo base
+│   ├── ui/                         # Tests de interfaz (Selenium)
+│   │   ├── test_login.py           # Login: válido, bloqueado, inválido + parametrizado CSV
+│   │   ├── test_inventory.py       # Agregar/remover productos del carrito
+│   │   ├── test_checkout.py        # Flujo E2E completo de compra
+│   │   ├── test_navbar.py          # Navegación: All Items, About, Logout, Reset
+│   │   └── test_social_media.py    # Visibilidad y URLs de botones de redes sociales
 │   │
-│   └── conftest.py              # Configuración de Fixtures y WebDriver
+│   ├── api/                        # Tests de API (Requests)
+│   │   └── test_reqres_api.py      # GET, POST, DELETE y encadenamiento contra reqres.in
+│   │
+│   ├── data/                       # Datos externos para parametrización
+│   │   └── login_data.csv          # Casos de login leídos por test_login_parametrizado
+│   │
+│   └── conftest.py                 # Driver fixture, screenshots con timestamp, logging
 │
-├── pytest.ini                   # Archivo de configuración principal de Pytest
-├── requirements.txt             # Dependencias del proyecto
-└── README.md                    # Documentación del proyecto
+├── utils/
+│   └── logger.py                   # Configuración global de logging → logs/suite.log
+│
+├── screenshots/                    # Screenshots de tests fallidos (generados en runtime)
+├── reports/                        # Reportes HTML de pytest (generados en runtime)
+├── logs/                           # Logs de ejecución (generados en runtime)
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml                  # Pipeline CI/CD con GitHub Actions
+│
+├── .gitignore
+├── pytest.ini                      # Configuración de pytest, markers y logging
+└── requirements.txt                # Dependencias del proyecto
 ```
 
-## ⚙️ Pre-requisitos
+---
 
-1. **Python 3.8+** instalado en tu sistema.
-2. Navegador **Google Chrome** instalado.
+## Instalación y Configuración
 
-## 🛠️ Instalación y Configuración
+### Pre-requisitos
 
-1. **Clonar/Navegar al repositorio:**
-   Ve a la carpeta del proyecto.
+- **Python 3.8+** instalado
+- **Google Chrome** instalado
+- **Git** instalado
+
+### Pasos
+
+1. **Clonar el repositorio:**
    ```bash
-   cd saucedemo-tests
+   git clone https://github.com/cesesteban/qa_automation_final.git
+   cd qa_automation_final
    ```
 
 2. **Crear y activar un entorno virtual:**
    ```bash
    python -m venv venv
    ```
-   - En Windows: `.\venv\Scripts\activate`
-   - En macOS/Linux: `source venv/bin/activate`
+   - Windows: `.\venv\Scripts\activate`
+   - macOS/Linux: `source venv/bin/activate`
 
 3. **Instalar dependencias:**
    ```bash
    pip install -r requirements.txt
    ```
 
-## 🏃 Ejecución de Pruebas
+---
 
-### Ejecución básica y Generación de Reporte HTML
+## Ejecución de las Pruebas
 
-Para ejecutar todos los tests disponibles y generar un reporte de pruebas interactivo en formato HTML, utiliza el siguiente comando:
+### Suite completa
 
 ```bash
-pytest -v --html=report.html --self-contained-html tests/ui/
+pytest
 ```
 
-> **Nota:** El flag `--self-contained-html` agrupa todo el diseño y las imágenes en un solo archivo `report.html`, ideal para enviarlo por correo o compartirlo.
+Genera el reporte en `reports/report.html` y los logs en `logs/suite.log`.
 
-### Opciones de ejecución
+### Solo tests de UI (Selenium)
 
-- **Ejecución en modo Headless (sin abrir el navegador):**
-  Puedes ejecutar las pruebas en modo oculto seteando la variable de entorno `HEADLESS` en "true":
-  
-  - En Windows (PowerShell):
-    ```powershell
-    $env:HEADLESS="true"; pytest -v tests/ui/
-    ```
-  - En macOS/Linux:
-    ```bash
-    HEADLESS=true pytest -v tests/ui/
-    ```
+```bash
+pytest tests/ui/ -m ui
+```
 
-- **Ejecutar un archivo de test específico:**
+### Solo tests de API (Requests)
+
+```bash
+pytest tests/api/ -m api
+```
+
+### Modo headless (sin abrir el navegador)
+
+- **Windows (PowerShell):**
+  ```powershell
+  $env:HEADLESS="true"; pytest tests/ui/
+  ```
+- **macOS/Linux:**
   ```bash
-  pytest -v tests/ui/test_login.py
+  HEADLESS=true pytest tests/ui/
   ```
 
-## 📸 Capturas de Pantalla (Screenshots)
+### Un archivo específico
 
-Si un test falla durante su ejecución, el framework está configurado en `conftest.py` para tomar una captura de pantalla automáticamente antes de cerrar el navegador. Estas imágenes se guardarán en una carpeta `screenshots/` dentro de la raíz del proyecto, lo que facilita el debug de los errores.
+```bash
+pytest tests/ui/test_login.py -v
+pytest tests/api/test_reqres_api.py -v
+```
+
+---
+
+## Interpretación de los Reportes
+
+### Reporte HTML (`reports/report.html`)
+
+Abrir el archivo en cualquier navegador. Muestra:
+
+| Columna | Descripción |
+|---------|-------------|
+| **Test** | Nombre completo del test (`archivo::función`) |
+| **Duration** | Tiempo de ejecución en segundos |
+| **Result** | `PASSED` (verde) / `FAILED` (rojo) / `ERROR` |
+
+- Los tests **fallidos** incluyen el traceback completo expandible.
+- Si el test usó Selenium y falló, el nombre del screenshot se registra en el log y en la salida de consola.
+
+### Logs (`logs/suite.log`)
+
+Formato de cada línea:
+```
+2026-07-04 15:30:00 INFO qa_final – Iniciando test: test_valid_login
+2026-07-04 15:30:03 INFO qa_final – Finalizando test: test_valid_login
+2026-07-04 15:30:05 ERROR qa_final – Test FALLIDO — screenshot guardado: screenshots/20260704_153005_test_invalid_login.png
+```
+
+### Screenshots (`screenshots/`)
+
+Cada screenshot de fallo sigue el formato `YYYYMMDD_HHMMSS_nombre_del_test.png`, lo que permite identificar exactamente cuándo ocurrió el error.
+
+---
+
+## Cobertura de Tests
+
+| Área | Tests | Descripción |
+|------|-------|-------------|
+| Login UI | 6 | Válido, bloqueado, inválido + 3 parametrizados desde CSV |
+| Inventario UI | 3 | Agregar producto, remover, navegación |
+| Checkout UI | 1 | Flujo E2E completo (agregar → carrito → checkout → confirmación) |
+| Navbar UI | 4 | All Items, About, Logout, Reset App State |
+| Redes Sociales UI | 3 | Visibilidad, URLs y navegación |
+| API GET | 3 | Lista usuarios, usuario individual, 404 |
+| API POST | 3 | Crear usuario, login exitoso, login sin password |
+| API DELETE | 1 | Eliminar usuario (204) |
+| API Encadenamiento | 1 | Crear y verificar datos devueltos |
+| **Total** | **25** | |
