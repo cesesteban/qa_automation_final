@@ -30,13 +30,10 @@ class CheckoutPage(BasePage):
             return False
 
     def fill_information_and_continue(self, first_name, last_name, postal_code):
-        import time
         self.type_text(self.FIRST_NAME_INPUT, first_name)
         self.type_text(self.LAST_NAME_INPUT, last_name)
         self.type_text(self.POSTAL_CODE_INPUT, postal_code)
-        time.sleep(1) # Sincronización con React
-        element = self.find_element(self.CONTINUE_BUTTON)
-        element.submit()
+        self.click(self.CONTINUE_BUTTON)
 
     # Step Two actions
     def is_checkout_step_two_displayed(self):
