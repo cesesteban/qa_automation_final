@@ -29,23 +29,18 @@ class CheckoutPage(BasePage):
         except:
             return False
 
-    def _fill_react_input(self, locator, value):
-        """Rellena un input React disparando el evento nativo que React escucha."""
-        element = self.find_element(locator)
-        self.driver.execute_script(
-            """
-            var nativeSetter = Object.getOwnPropertyDescriptor(
-                window.HTMLInputElement.prototype, 'value').set;
-            nativeSetter.call(arguments[0], arguments[1]);
-            arguments[0].dispatchEvent(new Event('input', {bubbles: true}));
-            """,
-            element, value
-        )
-
     def fill_information_and_continue(self, first_name, last_name, postal_code):
-        self._fill_react_input(self.FIRST_NAME_INPUT, first_name)
-        self._fill_react_input(self.LAST_NAME_INPUT, last_name)
-        self._fill_react_input(self.POSTAL_CODE_INPUT, postal_code)
+        from selenium.webdriver.common.action_chains import ActionChains
+        from selenium.webdriver.support import expected_conditions as EC
+
+        for locator, value in [
+            (self.FIRST_NAME_INPUT, first_name),
+            (self.LAST_NAME_INPUT, last_name),
+            (self.POSTAL_CODE_INPUT, postal_code),
+        ]:
+            element = self.wait.until(EC.element_to_be_clickable(locator))
+            ActionChains(self.driver).click(element).send_keys(value).perform()
+
         self.click(self.CONTINUE_BUTTON)
 
     # Step Two actions
