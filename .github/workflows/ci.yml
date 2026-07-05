@@ -1,0 +1,58 @@
+name: QA Automation CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache de dependencias pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar tests de API
+        run: pytest tests/api/ -v -m api --html=reports/report_api.html --self-contained-html
+
+      - name: Ejecutar tests de UI (headless)
+        run: pytest tests/ui/ -v -m ui --html=reports/report_ui.html --self-contained-html
+        env:
+          HEADLESS: "true"
+
+      - name: Subir reportes como artefactos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: reports/
+
+      - name: Subir logs como artefactos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: suite-logs
+          path: logs/
+
+      - name: Subir screenshots de fallos
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failure-screenshots
+          path: screenshots/
