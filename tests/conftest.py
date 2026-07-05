@@ -1,50 +1,47 @@
+import os
 import pytest
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-import os
+from utils.logger import logger
+
 
 @pytest.fixture(scope="function")
 def driver(request):
-    """
-    Initializes the WebDriver instance for each test.
-    Supports running in headless mode if specified via environment variables.
-    """
+    """Inicializa el WebDriver para cada test. Soporta modo headless via variable de entorno HEADLESS=true."""
     options = webdriver.ChromeOptions()
-    
-    # Check if headless mode is requested
+
     if os.environ.get("HEADLESS", "false").lower() == "true":
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")
-    
-    # Initialize driver using webdriver-manager
+
     service = ChromeService(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
-    
-    # Maximize window and set implicit wait
     driver.maximize_window()
     driver.implicitly_wait(5)
-    
+
+    logger.info(f"Iniciando test: {request.node.name}")
+
     yield driver
-    
-    # Take screenshot on failure before quitting
+
+    # Captura screenshot con timestamp si el test falló
     if request.node.rep_call.failed:
-        # Create screenshots directory if it doesn't exist
         os.makedirs("screenshots", exist_ok=True)
-        screenshot_name = f"screenshots/{request.node.name}.png"
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        screenshot_name = f"screenshots/{timestamp}_{request.node.name}.png"
         driver.save_screenshot(screenshot_name)
-        print(f"Screenshot saved to {screenshot_name}")
-        
+        logger.error(f"Test FALLIDO — screenshot guardado: {screenshot_name}")
+        print(f"Screenshot guardado: {screenshot_name}")
+
+    logger.info(f"Finalizando test: {request.node.name}")
     driver.quit()
+
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """
-    Hook to capture test execution status.
-    This allows the driver fixture to know if a test failed.
-    """
+    """Hook para capturar el estado de ejecución de cada test y hacerlo accesible al fixture driver."""
     outcome = yield
     rep = outcome.get_result()
-    # Set an attribute for each phase of a call, which can be "setup", "call", "teardown"
     setattr(item, "rep_" + rep.when, rep)
