@@ -2,8 +2,6 @@ import os
 import pytest
 from datetime import datetime
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 from utils.logger import logger
 
 
@@ -17,8 +15,12 @@ def driver(request):
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")
 
-    service = ChromeService(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    # Opciones requeridas en entornos CI/contenedores
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    # Selenium Manager (integrado en Selenium 4.6+) gestiona ChromeDriver automáticamente
+    driver = webdriver.Chrome(options=options)
     driver.maximize_window()
     driver.implicitly_wait(5)
 
