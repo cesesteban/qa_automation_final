@@ -10,6 +10,7 @@ def inventory_page(driver):
     login_page.login("standard_user", "secret_sauce")
     return InventoryPage(driver)
 
+@pytest.mark.ui
 def test_social_links_visibility(inventory_page):
     """Valida que los 3 botones de redes sociales sean visibles en la página."""
     print("\nValidando visibilidad de redes sociales...")
@@ -18,6 +19,7 @@ def test_social_links_visibility(inventory_page):
     assert inventory_page.is_visible(inventory_page.LINKEDIN_LINK), "LinkedIn link no es visible"
     print("-> Todos los botones son visibles.")
 
+@pytest.mark.ui
 def test_social_links_urls(inventory_page):
     """Valida que los enlaces de redes sociales apunten a las URLs correctas."""
     print("\nValidando URLs de redes sociales...")
@@ -33,6 +35,7 @@ def test_social_links_urls(inventory_page):
         print(f"-> {platform.capitalize()}: {actual_url}")
         assert actual_url == expected_url, f"La URL de {platform} no coincide. Esperado: {expected_url}, Obtenido: {actual_url}"
 
+@pytest.mark.ui
 def test_social_links_navigation(inventory_page, driver):
     """Valida que al hacer clic se abra una nueva pestaña con la URL correcta."""
     print("\nValidando navegación a Twitter...")

@@ -10,6 +10,7 @@ def inventory_page(driver):
     login_page.login("standard_user", "secret_sauce")
     return InventoryPage(driver)
 
+@pytest.mark.ui
 def test_navbar_all_items(inventory_page, driver):
     """Valida que el botón 'All Items' redirija a la página de inventario."""
     print("\nNavegando a 'All Items' desde el carrito...")
@@ -21,6 +22,7 @@ def test_navbar_all_items(inventory_page, driver):
     assert inventory_page.is_inventory_displayed()
     print("-> Redirección a 'All Items' exitosa.")
 
+@pytest.mark.ui
 def test_navbar_about(inventory_page, driver):
     """Valida que el botón 'About' redirija al sitio web de Sauce Labs."""
     print("\nNavegando a 'About'...")
@@ -30,6 +32,7 @@ def test_navbar_about(inventory_page, driver):
     assert "saucelabs.com" in driver.current_url
     print(f"-> Redirección a 'About' exitosa: {driver.current_url}")
 
+@pytest.mark.ui
 def test_navbar_logout(inventory_page, driver):
     """Valida que el botón 'Logout' cierre la sesión correctamente."""
     print("\nEjecutando Logout...")
@@ -42,6 +45,7 @@ def test_navbar_logout(inventory_page, driver):
     assert login_page.is_visible(login_page.LOGIN_BUTTON)
     print("-> Logout exitoso.")
 
+@pytest.mark.ui
 def test_navbar_reset_app_state(inventory_page, driver):
     """Valida que 'Reset App State' limpie el estado de la aplicación (ej. el carrito)."""
     print("\nAgregando producto y reseteando estado...")

@@ -11,6 +11,7 @@ def logged_in_inventory_page(driver):
     inventory_page = InventoryPage(driver)
     return inventory_page
 
+@pytest.mark.ui
 def test_add_item_to_cart(logged_in_inventory_page):
     page = logged_in_inventory_page
     
@@ -23,6 +24,7 @@ def test_add_item_to_cart(logged_in_inventory_page):
     # Assert cart count is 1
     assert page.get_cart_count() == 1
 
+@pytest.mark.ui
 def test_remove_item_from_cart(logged_in_inventory_page):
     page = logged_in_inventory_page
     
@@ -36,6 +38,7 @@ def test_remove_item_from_cart(logged_in_inventory_page):
     # Assert cart is empty
     assert page.get_cart_count() == 0
 
+@pytest.mark.ui
 def test_inventory_navigation(logged_in_inventory_page):
     page = logged_in_inventory_page
     

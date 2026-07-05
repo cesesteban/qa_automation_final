@@ -14,6 +14,7 @@ def logged_in_inventory_page(driver):
     inventory_page = InventoryPage(driver)
     return inventory_page
 
+@pytest.mark.ui
 def test_e2e_shopping_flow(logged_in_inventory_page, driver):
     inventory_page = logged_in_inventory_page
     

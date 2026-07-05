@@ -25,6 +25,7 @@ def login_page(driver):
     page.open()
     return page
 
+@pytest.mark.ui
 def test_valid_login(login_page, driver):
     print("\nValidando login exitoso con 'standard_user'...")
     login_page.login("standard_user", "secret_sauce")
@@ -33,12 +34,14 @@ def test_valid_login(login_page, driver):
     print("Validando que la pagina de inventario este visible...")
     assert inventory_page.is_inventory_displayed()
 
+@pytest.mark.ui
 def test_locked_out_user(login_page):
     print("\nValidando login con usuario bloqueado 'locked_out_user'...")
     login_page.login("locked_out_user", "secret_sauce")
     print("Validando que el mensaje de error sea el esperado para usuario bloqueado...")
     assert "Epic sadface: Sorry, this user has been locked out." in login_page.get_error_message()
 
+@pytest.mark.ui
 def test_invalid_login(login_page):
     print("\nValidando login con credenciales invalidas...")
     login_page.login("invalid_user", "wrong_password")
@@ -46,6 +49,7 @@ def test_invalid_login(login_page):
     assert "Epic sadface: Username and password do not match any user in this service" in login_page.get_error_message()
 
 
+@pytest.mark.ui
 @pytest.mark.parametrize("username,password,should_login,expected_error", load_login_data())
 def test_login_parametrizado(login_page, driver, username, password, should_login, expected_error):
     """Ejecuta casos de login leídos desde tests/data/login_data.csv."""
